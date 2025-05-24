@@ -1,7 +1,7 @@
 # Pre-build security checks
 check:
 	@echo "Running code analysis with Bandit..."
-	docker run --rm -v $(PWD):/app python:3.9-alpine sh -c "pip install bandit && bandit -r /app"
+	docker run --rm -v .:/app python:3.9-alpine sh -c "pip install bandit && bandit -r /app"
 	@echo "Running dependency check with pip-audit..."
 	docker run --rm -v $(PWD):/app python:3.9-alpine sh -c "pip install pip-audit && pip-audit -r /app/requirements.txt"
 
