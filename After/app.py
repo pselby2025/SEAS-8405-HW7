@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify
 import os
 import subprocess
+import ast
+import ipaddress
 
 app = Flask(__name__)
 
-# Hard-coded password
-PASSWORD = "supersecretpassword"
+# Load password from environment variable
+PASSWORD = os.environ.get("APP_PASSWORD")
 
 @app.route('/')
 def hello():
@@ -18,17 +20,26 @@ def hello():
 @app.route('/ping')
 def ping():
     ip = request.args.get('ip')
-    # Unsafe command execution
-    result = subprocess.check_output(f"ping -c 1 {ip}", shell=True)
-    return result
+    try:
+        ipaddress.ip_address(ip)  # Validate IP address
+    except ValueError:
+        return jsonify({"error": "Invalid IP address"}), 400
+
+    try:
+        result = subprocess.check_output(['ping', '-c', '1', ip], stderr=subprocess.STDOUT, text=True)
+        return result
+    except subprocess.CalledProcessError as e:
+        return jsonify({"error": f"Ping failed: {e.output}"}), 500
 
 # Insecure use of eval
 @app.route('/calculate')
 def calculate():
     expression = request.args.get('expr')
-    # Dangerous use of eval
-    result = eval(expression)
-    return str(result)
+    try:
+        result = ast.literal_eval(expression)
+        return str(result)
+    except (ValueError, SyntaxError):
+        return jsonify({"error": "Invalid expression"}), 400
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='127.0.0.1', port=5000)
