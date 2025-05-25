@@ -3,7 +3,14 @@ services:
     build: .
     image: mywebapp
     ports:
-      - "15000:5000"
+      - "127.0.0.1:5000:5000"
+     env_file:
+      - .env
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    pids_limit: 100 
     depends_on:
       - db
     networks:
@@ -14,6 +21,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mydb
+    volumes:
+      - db-data:/var/lib/postgresql/data  
     networks:
       - backend
 networks:
