@@ -3,6 +3,7 @@ import os
 import subprocess
 import ast
 import ipaddress
+import shutil
 
 app = Flask(__name__)
 
@@ -24,6 +25,11 @@ def ping():
         ipaddress.ip_address(ip)  # Validate IP address
     except ValueError:
         return jsonify({"error": "Invalid IP address"}), 400
+    
+    # Find the full path to the ping command
+    ping_path = shutil.which('ping')
+    if not ping_path:
+        return jsonify({"error": "Ping command not found"}), 500    
 
     try:
         result = subprocess.check_output(['ping', '-c', '1', ip], stderr=subprocess.STDOUT, text=True)
