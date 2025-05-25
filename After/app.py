@@ -32,7 +32,7 @@ def ping():
         return jsonify({"error": "Ping command not found"}), 500    
 
     try:
-        result = subprocess.check_output(['ping', '-c', '1', ip], stderr=subprocess.STDOUT, text=True)
+        result = subprocess.check_output([ping_path, '-c', '1', ip], stderr=subprocess.STDOUT, text=True)
         return result
     except subprocess.CalledProcessError as e:
         return jsonify({"error": f"Ping failed: {e.output}"}), 500
