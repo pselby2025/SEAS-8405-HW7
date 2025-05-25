@@ -41,4 +41,4 @@ clean:
 restart: stop start
 
 Set environment: to use password
-	docker run --rm -e APP_PASSWORD=your_secure_password -v ${PWD}:/app python:3.9-slim sh -c "python /app/app.py"
+	docker run --rm -e APP_PASSWORD=your_secure_password -v .:/app python:3.9-slim sh -c "python /app/app.py"
